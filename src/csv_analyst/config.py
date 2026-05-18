@@ -11,10 +11,10 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-# Load .env from current directory or parent directories
-load_dotenv()
+# Load .env from project root or current directory
+load_dotenv(find_dotenv(usecwd=True))
 
 
 def _env(key: str, default: str) -> str:

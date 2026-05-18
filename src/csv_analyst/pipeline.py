@@ -83,6 +83,9 @@ class AnalysisPipeline:
         if not file_path.exists():
             raise FileNotFoundError(f"CSV file not found: {file_path}")
 
+        # Load the CSV once — shared across all steps
+        df = pd.read_csv(file_path)
+
         # Step 1 — Profile
         profile = profile_dataset(file_path)
 
@@ -111,8 +114,6 @@ class AnalysisPipeline:
         llm_analysis: Optional[LLMAnalysis] = None
         if self.llm_enabled and config.is_api_key_set:
             try:
-                # Load sample rows for context
-                df = pd.read_csv(file_path)
                 sample_rows = df.head(config.max_sample_rows).to_dict(orient="records")
                 llm_analysis = run_llm_analysis(
                     profile=profile,
@@ -198,12 +199,13 @@ class AnalysisPipeline:
             lines.append(f"| Column | Count | Mean | Median | Std | Min | Max | Q25 | Q75 | Skew | Kurt |")
             lines.append(f"|--------|-------|------|--------|-----|-----|-----|-----|-----|------|------|")
             for ns in stats.numeric_stats:
+                skew_str = f"{ns.skewness:.2f}" if ns.skewness is not None else "N/A"
+                kurt_str = f"{ns.kurtosis:.2f}" if ns.kurtosis is not None else "N/A"
                 lines.append(
                     f"| `{ns.column}` | {ns.count} | {ns.mean:.2f} | {ns.median:.2f} | "
                     f"{ns.std:.2f} | {ns.min:.2f} | {ns.max:.2f} | "
                     f"{ns.get('25%', 'N/A')} | {ns.get('75%', 'N/A')} | "
-                    f"{ns.skewness:.2f}" if ns.skewness is not None else "N/A" f" | "
-                    f"{ns.kurtosis:.2f}" if ns.kurtosis is not None else "N/A" f" |"
+                    f"{skew_str} | {kurt_str} |"
                 )
             lines.append(f"")
 
