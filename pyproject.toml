@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "csv-analyst"
+version = "0.1.0"
+description = "AI-powered CSV data analysis agent — auto-detect columns, generate stats, find anomalies, and produce markdown reports with charts."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Chenney Zhuang", email = "dev@example.com"}
+]
+keywords = ["csv", "data-analysis", "ai", "pandas", "matplotlib", "cli", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "numpy>=1.24",
+    "pydantic>=2.0",
+    "scipy>=1.10",
+    "openai>=1.0",           # for DeepSeek-compatible API
+    "python-dotenv>=1.0",
+    "click>=8.0",
+    "rich>=13.0",
+    "seaborn>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+csv-analyst = "csv_analyst.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ChenneyZhuang/csv-analyst-agent"
+Repository = "https://github.com/ChenneyZhuang/csv-analyst-agent.git"
+Issues = "https://github.com/ChenneyZhuang/csv-analyst-agent/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/csv_analyst"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
