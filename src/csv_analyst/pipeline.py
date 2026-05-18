@@ -204,7 +204,7 @@ class AnalysisPipeline:
                 lines.append(
                     f"| `{ns.column}` | {ns.count} | {ns.mean:.2f} | {ns.median:.2f} | "
                     f"{ns.std:.2f} | {ns.min:.2f} | {ns.max:.2f} | "
-                    f"{ns.get('25%', 'N/A')} | {ns.get('75%', 'N/A')} | "
+                    f"{ns.q25:.2f} | {ns.q75:.2f} | "
                     f"{skew_str} | {kurt_str} |"
                 )
             lines.append(f"")

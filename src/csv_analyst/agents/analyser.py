@@ -78,7 +78,7 @@ def _build_user_prompt(
             f"  - `{ns.column}`: count={ns.count}, mean={ns.mean:.2f}, "
             f"median={ns.median:.2f}, std={ns.std:.2f}, "
             f"min={ns.min:.2f}, max={ns.max:.2f}, "
-            f"Q25={ns.get('25%', 'N/A')}, Q75={ns.get('75%', 'N/A')}"
+            f"Q25={ns.q25:.2f}, Q75={ns.q75:.2f}"
         )
         if ns.skewness is not None:
             line += f", skew={ns.skewness:.2f}, kurt={ns.kurtosis:.2f}"
