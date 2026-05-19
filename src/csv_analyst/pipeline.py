@@ -14,7 +14,6 @@ Steps:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 
@@ -111,7 +110,7 @@ class AnalysisPipeline:
         ]
 
         # Step 6 — LLM analysis (optional)
-        llm_analysis: Optional[LLMAnalysis] = None
+        llm_analysis: LLMAnalysis | None = None
         if self.llm_enabled and config.is_api_key_set:
             try:
                 sample_rows = df.head(config.max_sample_rows).to_dict(orient="records")
@@ -158,46 +157,43 @@ class AnalysisPipeline:
         anomalies,
         correlations: dict,
         charts: list[ChartReference],
-        llm_analysis: Optional[LLMAnalysis],
+        llm_analysis: LLMAnalysis | None,
     ) -> str:
         """Render the full markdown analysis report."""
         lines: list[str] = []
 
         # ── Title ──────────────────────────────────────────────────────
-        lines.append(f"# CSV Analysis Report")
-        lines.append(f"")
+        lines.append("# CSV Analysis Report")
+        lines.append("")
         lines.append(f"**File:** `{profile.file_path}`  ")
         lines.append(f"**Generated:** {profile.profiled_at}  ")
         lines.append(f"**Rows:** {profile.row_count:,}  |  **Columns:** {profile.column_count}  ")
         lines.append(f"**File size:** {profile.file_size_bytes:,} bytes  ")
-        lines.append(f"")
+        lines.append("")
 
         # ── LLM Executive Summary ─────────────────────────────────────
         if llm_analysis and llm_analysis.executive_summary:
-            lines.append(f"## 🤖 AI Analysis Summary")
-            lines.append(f"")
+            lines.append("## 🤖 AI Analysis Summary")
+            lines.append("")
             lines.append(f"{llm_analysis.executive_summary}")
-            lines.append(f"")
+            lines.append("")
 
         # ── Column Overview ───────────────────────────────────────────
-        lines.append(f"## 📋 Column Overview")
-        lines.append(f"")
-        lines.append(f"| # | Column | Type | Missing | Unique | Sample |")
-        lines.append(f"|---|--------|------|---------|--------|--------|")
+        lines.append("## 📋 Column Overview")
+        lines.append("")
+        lines.append("| # | Column | Type | Missing | Unique | Sample |")
+        lines.append("|---|--------|------|---------|--------|--------|")
         for i, col in enumerate(profile.columns, 1):
             sample = ", ".join(col.sample_values[:3])
-            lines.append(
-                f"| {i} | `{col.name}` | {col.inferred_type} | "
-                f"{col.null_pct:.1f}% | {col.unique_count} | {sample} |"
-            )
-        lines.append(f"")
+            lines.append(f"| {i} | `{col.name}` | {col.inferred_type} | {col.null_pct:.1f}% | {col.unique_count} | {sample} |")
+        lines.append("")
 
         # ── Numeric Stats ─────────────────────────────────────────────
         if stats.numeric_stats:
-            lines.append(f"## 📊 Numeric Column Statistics")
-            lines.append(f"")
-            lines.append(f"| Column | Count | Mean | Median | Std | Min | Max | Q25 | Q75 | Skew | Kurt |")
-            lines.append(f"|--------|-------|------|--------|-----|-----|-----|-----|-----|------|------|")
+            lines.append("## 📊 Numeric Column Statistics")
+            lines.append("")
+            lines.append("| Column | Count | Mean | Median | Std | Min | Max | Q25 | Q75 | Skew | Kurt |")
+            lines.append("|--------|-------|------|--------|-----|-----|-----|-----|-----|------|------|")
             for ns in stats.numeric_stats:
                 skew_str = f"{ns.skewness:.2f}" if ns.skewness is not None else "N/A"
                 kurt_str = f"{ns.kurtosis:.2f}" if ns.kurtosis is not None else "N/A"
@@ -207,99 +203,97 @@ class AnalysisPipeline:
                     f"{ns.q25:.2f} | {ns.q75:.2f} | "
                     f"{skew_str} | {kurt_str} |"
                 )
-            lines.append(f"")
+            lines.append("")
 
         # ── Categorical Stats ─────────────────────────────────────────
         if stats.categorical_stats:
-            lines.append(f"## 🏷️ Categorical Column Statistics")
-            lines.append(f"")
+            lines.append("## 🏷️ Categorical Column Statistics")
+            lines.append("")
             for cs in stats.categorical_stats:
                 lines.append(f"### `{cs.column}`")
-                lines.append(f"")
+                lines.append("")
                 lines.append(f"- **Unique values:** {cs.unique_count}")
                 if cs.top_value:
                     lines.append(f"- **Most common:** `{cs.top_value}` ({cs.top_freq} occurrences, {cs.top_pct:.1f}%)")
                 if cs.value_counts:
-                    lines.append(f"- **Top values:**")
+                    lines.append("- **Top values:**")
                     for val, cnt in list(cs.value_counts.items())[:10]:
                         lines.append(f"  - `{val}`: {cnt}")
-                lines.append(f"")
-            lines.append(f"")
+                lines.append("")
+            lines.append("")
 
         # ── Anomalies ─────────────────────────────────────────────────
-        lines.append(f"## ⚠️ Anomalies & Outliers")
-        lines.append(f"")
+        lines.append("## ⚠️ Anomalies & Outliers")
+        lines.append("")
         lines.append(f"**Total anomalies detected:** {anomalies.total_count}")
-        lines.append(f"")
+        lines.append("")
         if anomalies.anomalies:
             for a in anomalies.anomalies[:50]:
                 loc = f" [row {a.row_index}]" if a.row_index is not None else ""
                 lines.append(f"- **`{a.column}`**{loc} ({a.severity}): {a.value} — {a.reason}")
         else:
-            lines.append(f"✅ No anomalies detected.")
-        lines.append(f"")
+            lines.append("✅ No anomalies detected.")
+        lines.append("")
 
         # ── Correlations ──────────────────────────────────────────────
         if correlations:
-            lines.append(f"## 🔗 Correlations")
-            lines.append(f"")
+            lines.append("## 🔗 Correlations")
+            lines.append("")
             cols = list(correlations.keys())
             header = "| | " + " | ".join(f"`{c}`" for c in cols) + " |"
             lines.append(header)
             lines.append("|" + "---|" * (len(cols) + 1))
             for col_a in cols:
-                vals = " | ".join(
-                    f"{correlations[col_a].get(col_b, 0):.3f}" for col_b in cols
-                )
+                vals = " | ".join(f"{correlations[col_a].get(col_b, 0):.3f}" for col_b in cols)
                 lines.append(f"| `{col_a}` | {vals} |")
-            lines.append(f"")
+            lines.append("")
 
         # ── Charts ────────────────────────────────────────────────────
         if charts:
-            lines.append(f"## 📈 Charts")
-            lines.append(f"")
+            lines.append("## 📈 Charts")
+            lines.append("")
             for chart in charts:
                 lines.append(f"### {chart.title}")
-                lines.append(f"")
+                lines.append("")
                 lines.append(f"![{chart.title}]({chart.file_name})")
-                lines.append(f"")
+                lines.append("")
                 lines.append(f"_{chart.description}_")
-                lines.append(f"")
+                lines.append("")
 
         # ── LLM Insights ──────────────────────────────────────────────
         if llm_analysis:
             if llm_analysis.key_insights:
-                lines.append(f"## 💡 Key Insights")
-                lines.append(f"")
+                lines.append("## 💡 Key Insights")
+                lines.append("")
                 for insight in llm_analysis.key_insights:
                     lines.append(f"- {insight}")
-                lines.append(f"")
+                lines.append("")
 
             if llm_analysis.correlations_noted:
-                lines.append(f"## 🔍 Notable Correlations")
-                lines.append(f"")
+                lines.append("## 🔍 Notable Correlations")
+                lines.append("")
                 for c in llm_analysis.correlations_noted:
                     lines.append(f"- {c}")
-                lines.append(f"")
+                lines.append("")
 
             if llm_analysis.data_quality_notes:
-                lines.append(f"## 🧹 Data Quality Notes")
-                lines.append(f"")
+                lines.append("## 🧹 Data Quality Notes")
+                lines.append("")
                 for dq in llm_analysis.data_quality_notes:
                     lines.append(f"- {dq}")
-                lines.append(f"")
+                lines.append("")
 
             if llm_analysis.recommendations:
-                lines.append(f"## 🚀 Recommendations")
-                lines.append(f"")
+                lines.append("## 🚀 Recommendations")
+                lines.append("")
                 for rec in llm_analysis.recommendations:
                     lines.append(f"- {rec}")
-                lines.append(f"")
+                lines.append("")
 
         # ── Footer ────────────────────────────────────────────────────
-        lines.append(f"---")
-        lines.append(f"")
-        lines.append(f"*Report generated by [csv-analyst](https://github.com/ChenneyZhuang/csv-analyst-agent) v0.1.0*")
-        lines.append(f"")
+        lines.append("---")
+        lines.append("")
+        lines.append("*Report generated by [csv-analyst](https://github.com/ChenneyZhuang/csv-analyst-agent) v0.1.0*")
+        lines.append("")
 
         return "\n".join(lines)

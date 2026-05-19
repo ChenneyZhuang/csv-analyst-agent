@@ -37,14 +37,16 @@ def main() -> None:
 @main.command()
 @click.argument("csv_file", type=click.Path(exists=True, path_type=Path))
 @click.option(
-    "--output", "-o",
+    "--output",
+    "-o",
     type=click.Path(path_type=Path),
     default=Path("report.md"),
     help="Path for the output markdown report (default: report.md).",
     show_default=True,
 )
 @click.option(
-    "--charts-dir", "-c",
+    "--charts-dir",
+    "-c",
     type=click.Path(path_type=Path),
     default=Path("./charts"),
     help="Directory to save chart PNGs (default: ./charts).",
@@ -57,7 +59,8 @@ def main() -> None:
     help="Skip LLM-based AI analysis (offline mode).",
 )
 @click.option(
-    "--verbose", "-v",
+    "--verbose",
+    "-v",
     is_flag=True,
     default=False,
     help="Show detailed progress information.",
@@ -81,8 +84,7 @@ def run(
     console.print()
     console.print(
         Panel.fit(
-            f"[bold cyan]CSV Analyst[/bold cyan] v{__version__}  •  "
-            f"[dim]AI-powered CSV data analysis[/dim]",
+            f"[bold cyan]CSV Analyst[/bold cyan] v{__version__}  •  [dim]AI-powered CSV data analysis[/dim]",
             border_style="cyan",
         )
     )
@@ -129,8 +131,7 @@ def run(
     table.add_row("Charts generated", str(len(result.charts)))
     table.add_row(
         "AI analysis",
-        "✅ Included" if result.llm_analysis and result.llm_analysis.executive_summary
-        else "⏭️ Skipped",
+        "✅ Included" if result.llm_analysis and result.llm_analysis.executive_summary else "⏭️ Skipped",
     )
 
     console.print(table)

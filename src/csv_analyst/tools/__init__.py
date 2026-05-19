@@ -1,3 +1,4 @@
+from csv_analyst.tools.charts import generate_all_charts
 from csv_analyst.tools.stats import (
     compute_categorical_stats,
     compute_correlations,
@@ -6,7 +7,6 @@ from csv_analyst.tools.stats import (
     detect_anomalies,
     profile_dataset,
 )
-from csv_analyst.tools.charts import generate_all_charts
 
 __all__ = [
     "compute_categorical_stats",

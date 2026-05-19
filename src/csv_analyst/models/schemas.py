@@ -7,14 +7,13 @@ All data flowing between pipeline stages is validated with these schemas.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Column metadata
 # ---------------------------------------------------------------------------
+
 
 class ColumnInfo(BaseModel):
     """Metadata about a single CSV column."""
@@ -55,6 +54,7 @@ class DatasetProfile(BaseModel):
 # Statistical summary
 # ---------------------------------------------------------------------------
 
+
 class NumericColumnStats(BaseModel):
     """Descriptive statistics for a single numeric column."""
 
@@ -67,8 +67,8 @@ class NumericColumnStats(BaseModel):
     max: float
     q25: float = Field(..., alias="25%")
     q75: float = Field(..., alias="75%")
-    skewness: Optional[float] = None
-    kurtosis: Optional[float] = None
+    skewness: float | None = None
+    kurtosis: float | None = None
 
 
 class CategoricalColumnStats(BaseModel):
@@ -76,9 +76,9 @@ class CategoricalColumnStats(BaseModel):
 
     column: str
     unique_count: int
-    top_value: Optional[str] = None
-    top_freq: Optional[int] = None
-    top_pct: Optional[float] = None
+    top_value: str | None = None
+    top_freq: int | None = None
+    top_pct: float | None = None
     value_counts: dict[str, int] = Field(default_factory=dict)
 
 
@@ -93,11 +93,12 @@ class StatsSummary(BaseModel):
 # Anomalies & outliers
 # ---------------------------------------------------------------------------
 
+
 class Anomaly(BaseModel):
     """A single detected anomaly or outlier."""
 
     column: str = Field(..., description="Column where the anomaly was found.")
-    row_index: Optional[int] = Field(None, description="Row index (0-based) of the anomaly.")
+    row_index: int | None = Field(None, description="Row index (0-based) of the anomaly.")
     value: str = Field(..., description="The anomalous value.")
     reason: str = Field(..., description="Human-readable explanation of why it is anomalous.")
     severity: str = Field(
@@ -119,6 +120,7 @@ class AnomalyReport(BaseModel):
 # ---------------------------------------------------------------------------
 # LLM analysis
 # ---------------------------------------------------------------------------
+
 
 class LLMAnalysis(BaseModel):
     """Structured output from the LLM analysis step."""
@@ -149,6 +151,7 @@ class LLMAnalysis(BaseModel):
 # Pipeline result
 # ---------------------------------------------------------------------------
 
+
 class ChartReference(BaseModel):
     """Reference to a generated chart file."""
 
@@ -164,6 +167,6 @@ class AnalysisResult(BaseModel):
     profile: DatasetProfile
     stats: StatsSummary
     anomalies: AnomalyReport
-    llm_analysis: Optional[LLMAnalysis] = None
+    llm_analysis: LLMAnalysis | None = None
     charts: list[ChartReference] = Field(default_factory=list)
     report_markdown: str = ""

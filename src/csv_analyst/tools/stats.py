@@ -8,9 +8,7 @@ using pandas + numpy + scipy.
 from __future__ import annotations
 
 import math
-from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -148,8 +146,8 @@ def compute_numeric_stats(series: pd.Series, col_name: str) -> NumericColumnStat
     q25 = float(clean.quantile(0.25))
     q75 = float(clean.quantile(0.75))
 
-    skew: Optional[float] = None
-    kurt: Optional[float] = None
+    skew: float | None = None
+    kurt: float | None = None
     if count >= 3 and std_val > 0:
         skew = float(sp_stats.skew(clean, bias=False))
         kurt = float(sp_stats.kurtosis(clean, bias=False))
@@ -174,9 +172,9 @@ def compute_categorical_stats(series: pd.Series, col_name: str) -> CategoricalCo
     unique = clean.nunique()
     vc = clean.value_counts()
 
-    top_value: Optional[str] = None
-    top_freq: Optional[int] = None
-    top_pct: Optional[float] = None
+    top_value: str | None = None
+    top_freq: int | None = None
+    top_pct: float | None = None
 
     if len(vc) > 0:
         top_value = str(vc.index[0])
@@ -324,9 +322,7 @@ def compute_correlations(file_path: str | Path, method: str = "pearson") -> dict
     Returns a nested dict suitable for JSON serialisation / LLM prompts.
     """
     df = pd.read_csv(file_path)
-    numeric_cols = [
-        c for c in df.columns if _infer_column_type(df[c]) == "numeric"
-    ]
+    numeric_cols = [c for c in df.columns if _infer_column_type(df[c]) == "numeric"]
     if len(numeric_cols) < 2:
         return {}
 

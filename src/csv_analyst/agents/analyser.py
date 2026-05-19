@@ -58,7 +58,7 @@ def _build_user_prompt(
 
     # ── Profile summary ────────────────────────────────────────────────
     profile_lines: list[str] = [
-        f"**Dataset Profile**",
+        "**Dataset Profile**",
         f"- File: {profile.file_path}",
         f"- Rows: {profile.row_count:,}  |  Columns: {profile.column_count}",
         f"- File size: {profile.file_size_bytes:,} bytes",
@@ -67,8 +67,7 @@ def _build_user_prompt(
     ]
     for col in profile.columns:
         profile_lines.append(
-            f"  - `{col.name}` → {col.inferred_type} ({col.dtype}), "
-            f"{col.null_pct:.1f}% missing, {col.unique_count} unique"
+            f"  - `{col.name}` → {col.inferred_type} ({col.dtype}), {col.null_pct:.1f}% missing, {col.unique_count} unique"
         )
 
     # ── Numeric stats ─────────────────────────────────────────────────
@@ -87,14 +86,8 @@ def _build_user_prompt(
     # ── Categorical stats ─────────────────────────────────────────────
     cat_lines: list[str] = ["", "**Categorical Column Statistics:**"]
     for cs in stats.categorical_stats:
-        top_info = (
-            f"top='{cs.top_value}' ({cs.top_pct:.1f}%)"
-            if cs.top_value
-            else "N/A"
-        )
-        cat_lines.append(
-            f"  - `{cs.column}`: {cs.unique_count} unique values, {top_info}"
-        )
+        top_info = f"top='{cs.top_value}' ({cs.top_pct:.1f}%)" if cs.top_value else "N/A"
+        cat_lines.append(f"  - `{cs.column}`: {cs.unique_count} unique values, {top_info}")
 
     # ── Anomalies ──────────────────────────────────────────────────────
     anomaly_lines: list[str] = [
@@ -103,9 +96,7 @@ def _build_user_prompt(
     ]
     for a in anomalies.anomalies[:30]:  # cap for prompt length
         loc = f" [row {a.row_index}]" if a.row_index is not None else ""
-        anomaly_lines.append(
-            f"  - `{a.column}`{loc}: {a.value} ({a.severity}) — {a.reason}"
-        )
+        anomaly_lines.append(f"  - `{a.column}`{loc}: {a.value} ({a.severity}) — {a.reason}")
 
     # ── Correlations ────────────────────────────────────────────────────
     corr_lines: list[str] = ["", "**Correlation Matrix (Pearson):**"]
@@ -113,10 +104,7 @@ def _build_user_prompt(
         columns = list(correlations.keys())
         corr_lines.append("  " + ", ".join(columns))
         for col_a in columns:
-            vals = ", ".join(
-                f"{col_b}={correlations[col_a].get(col_b, 'N/A')}"
-                for col_b in columns
-            )
+            vals = ", ".join(f"{col_b}={correlations[col_a].get(col_b, 'N/A')}" for col_b in columns)
             corr_lines.append(f"  {col_a}: {vals}")
     else:
         corr_lines.append("  (no numeric columns for correlation)")

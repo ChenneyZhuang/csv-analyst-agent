@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from pathlib import Path
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 # Load .env from project root or current directory
 load_dotenv(find_dotenv(usecwd=True))
@@ -27,31 +26,17 @@ class Config:
     """Central configuration for the CSV Analyst agent."""
 
     # DeepSeek / LLM settings
-    deepseek_api_key: str = field(
-        default_factory=lambda: _env("DEEPSEEK_API_KEY", "")
-    )
-    deepseek_base_url: str = field(
-        default_factory=lambda: _env("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")
-    )
-    deepseek_model: str = field(
-        default_factory=lambda: _env("DEEPSEEK_MODEL", "deepseek-chat")
-    )
-    deepseek_max_tokens: int = field(
-        default_factory=lambda: int(_env("DEEPSEEK_MAX_TOKENS", "4096"))
-    )
-    deepseek_temperature: float = field(
-        default_factory=lambda: float(_env("DEEPSEEK_TEMPERATURE", "0.3"))
-    )
+    deepseek_api_key: str = field(default_factory=lambda: _env("DEEPSEEK_API_KEY", ""))
+    deepseek_base_url: str = field(default_factory=lambda: _env("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"))
+    deepseek_model: str = field(default_factory=lambda: _env("DEEPSEEK_MODEL", "deepseek-chat"))
+    deepseek_max_tokens: int = field(default_factory=lambda: int(_env("DEEPSEEK_MAX_TOKENS", "4096")))
+    deepseek_temperature: float = field(default_factory=lambda: float(_env("DEEPSEEK_TEMPERATURE", "0.3")))
 
     # Output settings
-    charts_dir: str = field(
-        default_factory=lambda: _env("CSV_ANALYST_CHARTS_DIR", "./charts")
-    )
+    charts_dir: str = field(default_factory=lambda: _env("CSV_ANALYST_CHARTS_DIR", "./charts"))
 
     # Analysis limits
-    max_sample_rows: int = field(
-        default_factory=lambda: int(_env("CSV_ANALYST_MAX_SAMPLE_ROWS", "50"))
-    )
+    max_sample_rows: int = field(default_factory=lambda: int(_env("CSV_ANALYST_MAX_SAMPLE_ROWS", "50")))
 
     @property
     def is_api_key_set(self) -> bool:
