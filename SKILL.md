@@ -16,8 +16,8 @@ Upload a CSV → get statistical analysis, charts, and AI-powered insights.
 csv-analyst run /path/to/data.csv
 
 # Python
-from csv_analyst import run_analysis
-result = run_analysis("data.csv")
+from csv_analyst import AnalysisPipeline
+result = AnalysisPipeline().run("data.csv")
 ```
 
 ## Install

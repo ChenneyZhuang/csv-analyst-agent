@@ -305,9 +305,6 @@ def detect_anomalies(file_path: str | Path, zscore_threshold: float = 3.0) -> An
                     )
                 )
 
-        # ── Duplicate check on the whole dataset (once) ──────────────────
-        # Handled once outside the column loop below
-
     return AnomalyReport(anomalies=anomalies)
 
 

@@ -1,5 +1,5 @@
 """
-Chart generation tools using matplotlib + seaborn.
+Chart generation tools using matplotlib.
 
 Produces PNG charts for numeric distributions, categorical bar plots,
 correlation heatmaps, and outlier box plots.
