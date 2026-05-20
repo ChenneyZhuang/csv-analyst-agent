@@ -3,6 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status: Alpha](https://img.shields.io/badge/Status-Alpha-orange.svg)]()
+[![CI](https://github.com/ChenneyZhuang/csv-analyst-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/ChenneyZhuang/csv-analyst-agent/actions/workflows/ci.yml)
 
 **Drop in a CSV → get a full statistical analysis report with charts.**
 Zero config. AI-powered insights optional.
